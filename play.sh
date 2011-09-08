@@ -2,5 +2,5 @@
 
 while :; do 
     mplayer -really-quiet $(./streamr.py pop)
-    sleep 3
+    sleep 1
 done
