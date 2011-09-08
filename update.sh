@@ -1,3 +1,5 @@
 #!/bin/sh
 
-xargs -P8 -n1 ./streamr.py update < ./sources
+parallelism=${1:-1}
+
+xargs -P$parallelism -n1 ./streamr.py update < ./sources
