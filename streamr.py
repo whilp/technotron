@@ -49,11 +49,22 @@ def main(argv):
     store = Store(opts.store)
     store.init()
 
-    log.debug("opening %s", url)
+    script = args.pop(0)
+    command = args.pop(0)
+    commandfn = commandfns.get(command, None)
+    if commandfn is None:
+        optparser.error("unsupported command %r" % command)
 
+    return commandfn(store, opts, *args)
+
+def update(store, opts, url):
     for item in feed(url, fns=fns):
         log.debug("feed yields %s", item)
         store.add(item)
+
+commandfns = dict(
+    update=update,
+)
 
 def feed(url, fns=None):
     fnname, url = url.split("+", 1)
