@@ -196,7 +196,7 @@ class Store(set):
 
         return item
 
-    def remove(self):
+    def remove(self, item):
         try:
             os.renames(
                 os.path.join(self.store, str(item)),
