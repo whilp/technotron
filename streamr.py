@@ -153,6 +153,14 @@ class Store(set):
                 return True
 
         return False
+
+    def __iter__(self):
+        for dirpath, dirnames, filenames in os.walk(self.store):
+            for fname in filenames:
+                full = os.path.join(self.store, dirpath, fname)
+                with open(full, 'r') as fd:
+                    url = fd.read()
+                yield Item(link=full, url=url)
     
     def add(self, item):
         if item not in self:
