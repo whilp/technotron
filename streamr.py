@@ -39,7 +39,7 @@ def main(argv):
     optparser = OptionParser(
         option_list=options,
     )
-    (opts, args) = optparser.parse_args(argv)
+    (opts, args) = optparser.parse_args(args=argv)
 
     if not opts.silent:
         log.addHandler(logging.StreamHandler())
