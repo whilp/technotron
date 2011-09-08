@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import json
 import logging
 import os
 import shutil
@@ -14,6 +13,10 @@ try:
     from lxml import etree
 except ImportError:
     etree = None
+try:
+    import json
+except ImportError:
+    json = None
 
 try:
     NullHandler = logging.NullHandler
@@ -75,9 +78,11 @@ def rss(source):
         elif elem.tag == "enclosure":
             data["url"] = elem.get("url")
 
-fns = dict(
-    soundcloud=soundcloud,
-)
+fns = {}
+
+if json is not None:
+    fns["soundcloud"] = soundcloud
+
 if etree is not None:
     fns["rss"] = rss
 
