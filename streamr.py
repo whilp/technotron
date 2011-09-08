@@ -32,7 +32,7 @@ def main(argv):
 
     root, url = argv[1:3]
     log.debug("initializing store in %s", root)
-    store = Store(".")
+    store = Store(root)
     store.init()
 
     log.debug("opening %s", url)
