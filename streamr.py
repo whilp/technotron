@@ -142,7 +142,10 @@ class Store(set):
 
     def remove(self):
         try:
-            os.remove(os.path.join(self.store, str(item)))
+            os.renames(
+                os.path.join(self.store, str(item)),
+                os.path.join(self.seen, str(item))
+            )
         except OSError, e:
             if e.errno == 2:
                 raise KeyError(item)
