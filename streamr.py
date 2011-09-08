@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import logging
 import os
 import shutil
@@ -29,11 +30,30 @@ def main(argv):
     store.init()
 
     log.debug("opening %s", url)
+
+    for item in feed(url, fns=fns):
+        log.debug("feed yields %s", item)
+        store.add(item)
+
+def feed(url, fns=None):
+    fnname, url = url.split("+", 1)
     source = urllib2.urlopen(url)
+    fn = fns[fnname]
 
-    store.update(feed(source))
+    return fn(source)
 
-def feed(source):
+def soundcloud(source):
+    pushstr = "window.SC.bufferTracks.push("
+    pushlen = len(pushstr)
+    for line in source:
+        if line.startswith(pushstr):
+            jsonstr = line[pushlen:-3]
+            data = json.loads(jsonstr)
+            link = urlparse.urljoin(source.url, data["uri"])
+            url = data["streamUrl"]
+            yield Item(link=link, url=url)
+
+def rss(source):
     context = etree.iterparse(source, events=("start", "end"))
     initem = False
     data = {}
@@ -41,9 +61,7 @@ def feed(source):
         if elem.tag == "item":
             initem = action == "start"
             if data:
-                item = Item(**data)
-                log.debug("feed yields item %s", item)
-                yield item
+                yield Item(**data)
                 data = {}
                 
         if not initem:
@@ -53,6 +71,11 @@ def feed(source):
             data["link"] = elem.text
         elif elem.tag == "enclosure":
             data["url"] = elem.get("url")
+
+fns = dict(
+    soundcloud=soundcloud,
+    rss=rss,
+)
 
 def makedirs(path):
     try:
@@ -64,7 +87,7 @@ def makedirs(path):
 class Item(dict):
     
     def __init__(self, **kwargs):
-        kwargs["path"] = self.descheme(kwargs["url"]).lstrip("/")
+        kwargs["path"] = self.descheme(kwargs["link"]).lstrip("/")
         super(Item, self).__init__(**kwargs)
 
     def __str__(self):
