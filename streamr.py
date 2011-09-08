@@ -174,6 +174,12 @@ class Store(set):
         shutil.rmtree(self.seen)
         self.init()
 
+    def pop(self):
+        item = iter(self).next()
+        self.remove(item)
+
+        return item
+
     def remove(self):
         try:
             os.renames(
