@@ -32,6 +32,7 @@ options = [
     Option("-q", "--quiet", default=0, action="count"),
     Option("-s", "--silent", default=False, action="store_true"),
     Option("-v", "--verbose", default=0, action="count"),
+    Option("--store", default="."),
 ]
 
 def main(argv):
@@ -44,9 +45,8 @@ def main(argv):
         log.addHandler(logging.StreamHandler())
         log.level = max(1, logging.WARNING - (10 * (opts.verbose - opts.quiet)))
 
-    root, url = argv[1:3]
-    log.debug("initializing store in %s", root)
-    store = Store(root)
+    log.debug("initializing store in %s", opts.store)
+    store = Store(opts.store)
     store.init()
 
     log.debug("opening %s", url)
