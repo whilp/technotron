@@ -64,12 +64,12 @@ def update(store, opts, url):
 
 def pop(store, opts):
     item = store.pop()
-    sys.stderr.write("http:/{link}\n".format(**item))
+    sys.stderr.write("{link}\n".format(**item))
     sys.stdout.write("{url}\n".format(**item))
 
 def next(store, opts):
     item = iter(store).next()
-    sys.stderr.write("http:/{link}\n".format(**item))
+    sys.stderr.write("{link}\n".format(**item))
     sys.stdout.write("{url}\n".format(**item))
 
 def remove(store, opts, item):
@@ -175,15 +175,15 @@ class Store(set):
             for fname in filenames:
                 full = os.path.join(dirpath, fname)
                 with open(full, 'r') as fd:
-                    url = fd.read()
-                yield Item(link=full.replace(self.store, "", 1), url=url)
+                    yield Item(**dict(line.strip().split(" ", 1) for line in fd))
     
     def add(self, item):
         if item not in self:
             fname = os.path.join(self.store, str(item))
             makedirs(os.path.dirname(fname))
             with open(os.path.join(self.store, str(item)), 'w') as fd:
-                fd.write(item["url"])
+                for k, v in item.items():
+                    fd.write("{0} {1}\n".format(k, v))
 
     def clear(self):
         shutil.rmtree(self.store)
