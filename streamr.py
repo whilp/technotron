@@ -70,6 +70,7 @@ def feed(url, fns=None):
     fnname, url = url.split("+", 1)
     source = urllib2.urlopen(url)
     fn = fns[fnname]
+    log.debug("dispatching %s to %s", url, fnname)
 
     return fn(source)
 
