@@ -8,6 +8,7 @@ import urllib2
 import urlparse
 
 from collections import namedtuple
+from optparse import OptionParser, make_option as Option
 
 try:
     from lxml import etree
@@ -27,8 +28,20 @@ except AttributeError:
 log = logging.getLogger(__name__)
 log.addHandler(NullHandler())
 
+options = [
+    Option("-q", "--quiet", action="count"),
+    Option("-s", "--silent", default=False, action="store_true"),
+    Option("-v", "--verbose", action="count"),
+]
+
 def main(argv):
-    log.addHandler(logging.StreamHandler())
+    optparser = OptionParser(
+        option_list=options,
+    )
+    (opts, args) = optparser.parse_args(argv)
+
+    if not opts.silent:
+        log.addHandler(logging.StreamHandler())
 
     root, url = argv[1:3]
     log.debug("initializing store in %s", root)
