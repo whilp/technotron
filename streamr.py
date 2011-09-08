@@ -62,7 +62,23 @@ def update(store, opts, url):
         log.debug("feed yields %s", item)
         store.add(item)
 
+def pop(store, opts):
+    item = store.pop()
+    sys.stderr.write("http:/{link}\n".format(**item))
+    sys.stdout.write("{url}\n".format(**item))
+
+def next(store, opts):
+    item = iter(store).next()
+    sys.stderr.write("http:/{link}\n".format(**item))
+    sys.stdout.write("{url}\n".format(**item))
+
+def remove(store, opts, item):
+    store.remove(item)
+
 commandfns = dict(
+    next=next,
+    pop=pop,
+    remove=remove,
     update=update,
 )
 
