@@ -10,7 +10,10 @@ import urlparse
 
 from collections import namedtuple
 
-from lxml import etree
+try:
+    from lxml import etree
+except ImportError:
+    etree = None
 
 try:
     NullHandler = logging.NullHandler
@@ -74,8 +77,9 @@ def rss(source):
 
 fns = dict(
     soundcloud=soundcloud,
-    rss=rss,
 )
+if etree is not None:
+    fns["rss"] = rss
 
 def makedirs(path):
     try:
