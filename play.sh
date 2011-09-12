@@ -2,8 +2,14 @@
 
 UA="Mozilla/5.0"
 CURL="curl -s --user-agent \'${UA}\' -L"
+export TMPDIR=.
 
 while :; do 
-    ${CURL} $(./streamr.py pop) | mplayer -cache 8192 -really-quiet -
-    sleep 1
+    next=$(./streamr.py pop)
+    tmp=$(mktemp -d .play-XXXXXXXX)
+    trap "rm -rf $tmp" ERR EXIT
+    ${CURL} "$next" -o $tmp/next &
+    sleep 3
+    mplayer -really-quiet "$tmp/next"
+    rm -rf "$tmp"
 done
