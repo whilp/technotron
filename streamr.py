@@ -101,24 +101,48 @@ def soundcloud(source):
             url = data["streamUrl"]
             yield Item(link=link, url=url)
 
-def rss(source):
+def parserss(source):
     context = etree.iterparse(source, events=("start", "end"))
-    initem = False
-    data = {}
+    wasinitem = False
     for action, elem in context:
         if elem.tag == "item":
-            initem = action == "start"
-            if data:
-                yield Item(**data)
-                data = {}
-                
-        if not initem:
-            continue
+            stillinitem = action == "start"
+            if wasinitem is not stillinitem:
+                wasinitem = stillinitem
+                yield elem
+                elem.clear()
+        if wasinitem and action == "end":
+            yield elem
+            elem.clear()
 
+def rss(source):
+    data = {}
+    for elem in parserss(source):
         if elem.tag == "link":
             data["link"] = elem.text
         elif elem.tag == "enclosure":
             data["url"] = elem.get("url")
+        elif elem.tag == "item":
+            yield Item(**data)
+            data = {}
+
+def fact(source):
+    data = None
+    for elem in parserss(source):
+        if elem.tag == "title" and "FACT mix" in elem.text:
+            data = {}
+        if data is None:
+            continue
+
+        if elem.tag == "link":
+            data["link"] = elem.text
+        elif elem.tag == "{http://purl.org/rss/1.0/modules/content/}encoded":
+            for line in elem.text.splitlines(): 
+                if "Direct download: <a href=" in line:
+                    data["url"] = [x for x in line.split('"') if x.startswith("http")][0]
+                    break
+            yield Item(**data)
+            data = parser = None
 
 fns = {}
 
@@ -127,6 +151,7 @@ if json is not None:
 
 if etree is not None:
     fns["rss"] = rss
+    fns["fact"] = fact
 
 def makedirs(path):
     try:
@@ -138,7 +163,7 @@ def makedirs(path):
 class Item(dict):
     
     def __init__(self, **kwargs):
-        kwargs["path"] = self.descheme(kwargs["link"]).lstrip("/")
+        kwargs["path"] = self.descheme(kwargs["link"]).strip("/")
         super(Item, self).__init__(**kwargs)
 
     def __str__(self):
