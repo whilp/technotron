@@ -122,7 +122,7 @@ def rss(source):
             data["link"] = elem.text
         elif elem.tag == "enclosure":
             data["url"] = elem.get("url")
-        elif elem.tag == "item":
+        elif data and elem.tag == "item":
             yield Item(**data)
             data = {}
 
