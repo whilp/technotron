@@ -5,7 +5,7 @@ CURL="curl -s --user-agent \'${UA}\' -L"
 export TMPDIR=.
 
 while :; do 
-    next=$(./streamr.py pop)
+    next=$(./streamr.py randpop)
     tmp=$(mktemp -d .play-XXXXXXXX)
     trap "rm -rf $tmp" ERR EXIT
     ${CURL} "$next" -o $tmp/next &

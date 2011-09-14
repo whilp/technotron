@@ -2,6 +2,7 @@
 
 import logging
 import os
+import random
 import shutil
 import sys
 import urllib2
@@ -75,11 +76,18 @@ def next(store, opts):
 def remove(store, opts, item):
     store.remove(item)
 
+def randpop(store, opts):
+    item = random.sample(list(store), 1)[0]
+    sys.stderr.write("{link}\n".format(**item))
+    sys.stdout.write("{url}\n".format(**item))
+    store.remove(item)
+
 commandfns = dict(
     next=next,
     pop=pop,
     remove=remove,
     update=update,
+    randpop=randpop,
 )
 
 def feed(url, fns=None):
