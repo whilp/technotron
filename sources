@@ -8,6 +8,7 @@ rss+http://official.fm/tracks.rss?order=ASC&sort=tracks.title&user_id=77420
 rss+http://official.fm/tracks.rss?order=ASC&sort=tracks.title&user_id=7927
 rss+http://official.fm/tracks.rss?order=ASC&sort=tracks.title&user_id=5640
 rss+http://pontone.pl/feed/
+rss+http://www.mutek.org/podcast.rss
 rss+http://waxtreatment.de/podcast/wtp.rss
 fact+http://feeds.feedburner.com/FactMagazineMusicAndArt
 soundcloud+http://soundcloud.com/kompakt/tracks
