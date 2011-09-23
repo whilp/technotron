@@ -152,6 +152,12 @@ def fact(source):
             yield Item(**data)
             data = parser = None
 
+def officialfm(source):
+    for item in rss(source):
+        id = item["link"].split("/")[-1]
+        item["url"] = "http://cdn.official.fm/mp3s/{0}/{1}.mp3".format(id[:3], id)
+        yield item
+
 fns = {}
 
 if json is not None:
@@ -160,6 +166,7 @@ if json is not None:
 if etree is not None:
     fns["rss"] = rss
     fns["fact"] = fact
+    fns["officialfm"] = officialfm
 
 def makedirs(path):
     try:
